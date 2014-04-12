@@ -1,0 +1,17 @@
+{
+    "name": "vector-tile",
+    "description": "Parses vector tiles",
+    "repository": "https://github.com/mapbox/vector-tile-js.git",
+    "version": "0.0.1",
+    "license": "BSD",
+    "main": "./lib/vectortile",
+    "dependencies": {
+        "pbf": "~0.0.1"
+    },
+    "devDependencies": {
+        "mocha": "~1.18.2"
+    },
+    "scripts": {
+        "test": "mocha -R spec"
+    }
+}
