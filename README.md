@@ -16,3 +16,14 @@ landuse.length;
 // Returns the first feature
 landuse.feature(0);
 ```
+
+## Depends
+
+ - Node.js v0.10.x or v0.8.x
+
+
+## Install
+
+To install:
+
+    npm install vector-tile
