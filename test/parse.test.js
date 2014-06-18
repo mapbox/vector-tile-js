@@ -1,6 +1,8 @@
 var test = require('tape'),
     fs = require('fs'),
-    VectorTile = require('..');
+    VectorTile = require('..'),
+    VectorTileLayer = require('../lib/vectortilelayer'),
+    VectorTileFeature = require('../lib/vectortilefeature');
 
 test('parsing vector tiles', function(t) {
     var data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
@@ -39,4 +41,16 @@ test('parsing vector tiles', function(t) {
         t.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
         t.end();
     });
+});
+
+test('VectorTileLayer', function(t) {
+    var emptyLayer = new VectorTileLayer(new Buffer([]));
+    t.ok(emptyLayer, 'can be created with no values');
+    t.end();
+});
+
+test('VectorTileFeature', function(t) {
+    var emptyFeature = new VectorTileFeature(new Buffer([]));
+    t.ok(emptyFeature, 'can be created with no values');
+    t.end();
 });
