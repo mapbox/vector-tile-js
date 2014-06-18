@@ -23,6 +23,12 @@ test('parsing vector tiles', function(t) {
 
         var park = tile.layers.poi_label.feature(11);
 
+        t.deepEqual(park.bbox(), [ 3898, 1731, 3898, 1731 ]);
+
+        t.throws(function() {
+            var park = tile.layers.poi_label.feature(1e9);
+        }, 'throws on reading a feature out of bounds');
+
         t.equal(park.name, 'Mauerpark');
         t.equal(park.type, 'Park');
 
