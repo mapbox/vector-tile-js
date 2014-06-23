@@ -4,7 +4,7 @@
   "repository": "https://github.com/mapbox/vector-tile-js.git",
   "version": "0.0.1",
   "license": "BSD",
-  "main": "./lib/vectortile",
+  "main": "index.js",
   "dependencies": {
     "pbf": "~0.0.1"
   },

@@ -1,8 +1,8 @@
 var test = require('tape'),
     fs = require('fs'),
-    VectorTile = require('..'),
-    VectorTileLayer = require('../lib/vectortilelayer'),
-    VectorTileFeature = require('../lib/vectortilefeature');
+    VectorTile = require('..').VectorTile,
+    VectorTileLayer = require('..').VectorTileLayer,
+    VectorTileFeature = require('..').VectorTileFeature;
 
 test('parsing vector tiles', function(t) {
     var data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
