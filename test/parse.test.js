@@ -42,6 +42,19 @@ test('parsing vector tiles', function(t) {
         t.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
         t.end();
     });
+
+    t.test('changing first point of a polygon should not change last point', function(t) {
+        var tile = new VectorTile(new Protobuf(data));
+
+        var building = tile.layers.building.feature(0).loadGeometry();
+        t.deepEqual(building, [ [ { x: 2039, y: -32 }, { x: 2035, y: -31 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
+        building[0][0].x = 1;
+        building[0][0].y = 2;
+        building[0][1].x = 3;
+        building[0][1].y = 4;
+        t.deepEqual(building, [ [ { x: 1, y: 2 }, { x: 3, y: 4 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
+        t.end();
+    });
 });
 
 test('VectorTileLayer', function(t) {
