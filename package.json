@@ -6,7 +6,6 @@
   "license": "BSD",
   "main": "index.js",
   "dependencies": {
-    "pbf": "~0.0.1",
     "point-geometry": "0.0.0"
   },
   "devDependencies": {
