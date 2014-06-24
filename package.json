@@ -11,7 +11,8 @@
   "devDependencies": {
     "tape": "~2.13.3",
     "istanbul": "~0.2.11",
-    "coveralls": "~2.10.0"
+    "coveralls": "~2.10.0",
+    "pbf": "0.0.1"
   },
   "scripts": {
     "test": "tape test/parse.test.js",

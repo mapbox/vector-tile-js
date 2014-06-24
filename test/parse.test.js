@@ -1,5 +1,6 @@
 var test = require('tape'),
     fs = require('fs'),
+    Protobuf = require('pbf'),
     VectorTile = require('..').VectorTile,
     VectorTileLayer = require('..').VectorTileLayer,
     VectorTileFeature = require('..').VectorTileFeature;
@@ -8,7 +9,7 @@ test('parsing vector tiles', function(t) {
     var data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
 
     t.test('should have all layers', function(t) {
-        var tile = new VectorTile(data);
+        var tile = new VectorTile(new Protobuf(data));
 
         t.deepEqual(Object.keys(tile.layers), [
             'landuse', 'waterway', 'water', 'barrier_line', 'building',
@@ -19,7 +20,7 @@ test('parsing vector tiles', function(t) {
     });
 
     t.test('should extract the tags of a feature', function(t) {
-        var tile = new VectorTile(data);
+        var tile = new VectorTile(new Protobuf(data));
 
         t.equal(tile.layers.poi_label.length, 558);
 
