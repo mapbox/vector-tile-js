@@ -2,7 +2,7 @@
   "name": "vector-tile",
   "description": "Parses vector tiles",
   "repository": "https://github.com/mapbox/vector-tile-js.git",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "BSD",
   "main": "index.js",
   "dependencies": {
