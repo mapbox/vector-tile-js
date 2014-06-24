@@ -52,5 +52,7 @@ test('VectorTileLayer', function(t) {
 test('VectorTileFeature', function(t) {
     var emptyFeature = new VectorTileFeature(new Buffer([]));
     t.ok(emptyFeature, 'can be created with no values');
+    t.ok(typeof VectorTileFeature.mapping === 'object');
+    t.deepEqual(VectorTileFeature.mapping, [ , 'point', 'line', 'fill' ]);
     t.end();
 });
