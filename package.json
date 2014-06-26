@@ -9,13 +9,21 @@
     "point-geometry": "0.0.0"
   },
   "devDependencies": {
-    "tape": "~2.13.3",
-    "istanbul": "~0.2.11",
     "coveralls": "~2.10.0",
-    "pbf": "0.0.1"
+    "istanbul": "~0.2.11",
+    "jshint": "^2.5.1",
+    "pbf": "0.0.1",
+    "tape": "~2.13.3"
+  },
+  "jshintConfig": {
+    "trailing": true,
+    "undef": true,
+    "unused": true,
+    "indent": 4,
+    "node": true
   },
   "scripts": {
-    "test": "tape test/parse.test.js",
+    "test": "jshint lib && tape test/parse.test.js",
     "cov": "istanbul cover ./node_modules/.bin/tape test/parse.test.js && coveralls < ./coverage/lcov.info"
   }
 }
