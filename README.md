@@ -62,8 +62,6 @@ An object that contains the data for a single vector tile layer.
 - **name** (`String) `&mdash; layer name
 - **extent** (`Number`, default: `4096`) &mdash; tile extent size
 - **length** (`Number`) &mdash; number of features in the layer
-- **shaping** (`Object`) &mdash; an object with font shaping information
-- **faces** (`String[]`) &mdash; an array of font faces used
 
 #### Methods
 
