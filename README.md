@@ -42,12 +42,9 @@ An object that parses vector tile data and makes it readable.
 
 #### Constructor
 
-```js
-new VectorTile(/* Protobuf */ buffer[, /* Number */ end]);
-```
-
-Parses the vector tile data given a [Protobuf](https://github.com/mapbox/pbf) buffer,
-saving resulting layers in the created object as a `layers` property.
+**new VectorTile(buffer[, end])** &mdash;
+parses the vector tile data given a [Protobuf](https://github.com/mapbox/pbf) buffer,
+saving resulting layers in the created object as a `layers` property. Optionally accepts end index.
 
 #### Properties
 
@@ -61,16 +58,16 @@ An object that contains the data for a single vector tile layer.
 
 #### Properties
 
-- **version** (Number, default: 1)
-- **name** (String) &mdash; layer name
-- **extent** (Number, default: 4096) &mdash; tile extent size
-- **length** (Number) &mdash; number of features in the layer
-- **shaping** (Object) &mdash; an object with font shaping information
-- **faces** (String[]) &mdash; an array of font faces used
+- **version** (`Number`, default: `1`)
+- **name** (`String) `&mdash; layer name
+- **extent** (`Number`, default: `4096`) &mdash; tile extent size
+- **length** (`Number`) &mdash; number of features in the layer
+- **shaping** (`Object`) &mdash; an object with font shaping information
+- **faces** (`String[]`) &mdash; an array of font faces used
 
 #### Methods
 
-- **feature(i)* &mdash; get a feature (`VectorTileFeature`) by the given index from the layer.
+- **feature(i)*& &mdash; get a feature (`VectorTileFeature`) by the given index from the layer.
 
 
 ### VectorTileFeature
@@ -79,8 +76,8 @@ An object that contains the data for a single feature.
 
 #### Properties
 
-- **type** (Number) &mdash; type of the feature (also see `VectorTileFeature.types`)
-- **extent** (Number) &mdash; feature extent size
+- **type** (`Number`) &mdash; type of the feature (also see `VectorTileFeature.types`)
+- **extent** (`Number`) &mdash; feature extent size
 
 #### Methods
 
