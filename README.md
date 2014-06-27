@@ -42,9 +42,9 @@ An object that parses vector tile data and makes it readable.
 
 #### Constructor
 
-**new VectorTile(buffer[, end])** &mdash;
-parses the vector tile data given a [Protobuf](https://github.com/mapbox/pbf) buffer,
-saving resulting layers in the created object as a `layers` property. Optionally accepts end index.
+- **new VectorTile(buffer[, end])** &mdash;
+  parses the vector tile data given a [Protobuf](https://github.com/mapbox/pbf) buffer,
+  saving resulting layers in the created object as a `layers` property. Optionally accepts end index.
 
 #### Properties
 
@@ -67,7 +67,7 @@ An object that contains the data for a single vector tile layer.
 
 #### Methods
 
-- **feature(i)*& &mdash; get a feature (`VectorTileFeature`) by the given index from the layer.
+- **feature(i)** &mdash; get a feature (`VectorTileFeature`) by the given index from the layer.
 
 
 ### VectorTileFeature
