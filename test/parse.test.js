@@ -1,63 +1,96 @@
-var assert = require('assert');
-var fs = require('fs');
+var test = require('tape'),
+    fs = require('fs'),
+    Protobuf = require('pbf'),
+    VectorTile = require('..').VectorTile,
+    VectorTileLayer = require('..').VectorTileLayer,
+    VectorTileFeature = require('..').VectorTileFeature;
 
-var VectorTile = require('..');
+test('parsing vector tiles', function(t) {
+    var data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
 
-describe('parsing vector tiles', function() {
-    var data;
-    before(function() {
-        data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
-    });
+    t.test('should have all layers', function(t) {
+        var tile = new VectorTile(new Protobuf(data));
 
-
-    it('should have all layers', function() {
-        var tile = new VectorTile(data);
-
-        assert.deepEqual(Object.keys(tile.layers), [
+        t.deepEqual(Object.keys(tile.layers), [
             'landuse', 'waterway', 'water', 'barrier_line', 'building',
             'landuse_overlay', 'tunnel', 'road', 'bridge', 'place_label',
             'water_label', 'poi_label', 'road_label', 'waterway_label' ]);
 
-        // console.warn(tile.layers.poi_label);
+        t.end();
     });
 
-    it('should extract the tags of a feature', function() {
-        var tile = new VectorTile(data);
+    t.test('should extract the tags of a feature', function(t) {
+        var tile = new VectorTile(new Protobuf(data));
 
-        assert.equal(tile.layers.poi_label.length, 558);
+        t.equal(tile.layers.poi_label.length, 558);
 
         var park = tile.layers.poi_label.feature(11);
 
-        assert.equal(park.name, 'Mauerpark');
-        assert.equal(park.type, 'Park');
+        t.deepEqual(park.bbox(), [ 3898, 1731, 3898, 1731 ]);
+
+        t.throws(function() {
+            var park = tile.layers.poi_label.feature(1e9);
+        }, 'throws on reading a feature out of bounds');
+
+        t.equal(park.properties.name, 'Mauerpark');
+        t.equal(park.properties.type, 'Park');
 
         // Check point geometry
-        assert.deepEqual(park.loadGeometry(), [ [ { x: 3898, y: 1731 } ] ]);
+        t.deepEqual(park.loadGeometry(), [ [ { x: 3898, y: 1731 } ] ]);
 
         // Check line geometry
-        assert.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
+        t.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
+        t.end();
     });
 
-    it('should convert to GeoJSON', function() {
-        var tile = new VectorTile(data);
+    t.test('changing first point of a polygon should not change last point', function(t) {
+        var tile = new VectorTile(new Protobuf(data));
+
+        var building = tile.layers.building.feature(0).loadGeometry();
+        t.deepEqual(building, [ [ { x: 2039, y: -32 }, { x: 2035, y: -31 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
+        building[0][0].x = 1;
+        building[0][0].y = 2;
+        building[0][1].x = 3;
+        building[0][1].y = 4;
+        t.deepEqual(building, [ [ { x: 1, y: 2 }, { x: 3, y: 4 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
+        t.end();
+    });
+
+    t.test('should convert to GeoJSON', function() {
+        var tile = new VectorTile(new Protobuf(data));
         var geojson = tile.toGeoJSON();
 
-        assert.deepEqual(Object.keys(geojson), [
+        t.deepEqual(Object.keys(geojson), [
             'landuse', 'waterway', 'water', 'barrier_line', 'building',
             'landuse_overlay', 'tunnel', 'road', 'bridge', 'place_label',
             'water_label', 'poi_label', 'road_label', 'waterway_label' ]);
 
-        assert.equal(geojson.poi_label.features.length, 558);
+        t.equal(geojson.poi_label.features.length, 558);
 
         var park = geojson.poi_label.features[11];
 
-        assert.equal(park.properties.name, 'Mauerpark');
-        assert.equal(park.properties.type, 'Park');
+        t.equal(park.properties.name, 'Mauerpark');
+        t.equal(park.properties.type, 'Park');
 
         // Check point geometry
-        assert.deepEqual(park.geometry.coordinates, [ [ [3898, 1731] ] ]);
+        t.deepEqual(park.geometry.coordinates, [ [ [3898, 1731] ] ]);
 
         // Check line geometry
-        assert.deepEqual(geojson.road.features[656].geometry.coordinates, [ [1988, 306], [1808, 321], [1506, 347] ]);
+        t.deepEqual(geojson.road.features[656].geometry.coordinates, [ [1988, 306], [1808, 321], [1506, 347] ]);
+        t.end();
     });
+});
+
+test('VectorTileLayer', function(t) {
+    var emptyLayer = new VectorTileLayer(new Buffer([]));
+    t.ok(emptyLayer, 'can be created with no values');
+    t.end();
+});
+
+test('VectorTileFeature', function(t) {
+    var emptyFeature = new VectorTileFeature(new Buffer([]));
+    t.ok(emptyFeature, 'can be created with no values');
+    t.ok(Array.isArray(VectorTileFeature.types));
+    t.deepEqual(VectorTileFeature.types, ['Unknown', 'Point', 'LineString', 'Polygon']);
+    t.end();
 });

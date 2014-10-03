@@ -1,17 +1,29 @@
 {
-    "name": "vector-tile",
-    "description": "Parses vector tiles",
-    "repository": "https://github.com/mapbox/vector-tile-js.git",
-    "version": "0.0.1",
-    "license": "BSD",
-    "main": "./lib/vectortile",
-    "dependencies": {
-        "pbf": "~0.0.1"
-    },
-    "devDependencies": {
-        "mocha": "~1.18.2"
-    },
-    "scripts": {
-        "test": "mocha -R spec"
-    }
+  "name": "vector-tile",
+  "description": "Parses vector tiles",
+  "repository": "https://github.com/mapbox/vector-tile-js.git",
+  "version": "0.1.1",
+  "license": "BSD",
+  "main": "index.js",
+  "dependencies": {
+    "point-geometry": "0.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "~2.10.0",
+    "istanbul": "~0.2.11",
+    "jshint": "^2.5.1",
+    "pbf": "0.0.1",
+    "tape": "~2.13.3"
+  },
+  "jshintConfig": {
+    "trailing": true,
+    "undef": true,
+    "unused": true,
+    "indent": 4,
+    "node": true
+  },
+  "scripts": {
+    "test": "jshint lib && tape test/parse.test.js",
+    "cov": "istanbul cover ./node_modules/.bin/tape test/parse.test.js && coveralls < ./coverage/lcov.info"
+  }
 }
