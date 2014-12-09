@@ -6,7 +6,7 @@ var test = require('tape'),
     VectorTileFeature = require('..').VectorTileFeature;
 
 test('parsing vector tiles', function(t) {
-    var data = fs.readFileSync('./test/fixtures/14-8801-5371.vector.pbf');
+    var data = fs.readFileSync(__dirname + '/fixtures/14-8801-5371.vector.pbf');
 
     t.test('should have all layers', function(t) {
         var tile = new VectorTile(new Protobuf(data));
@@ -68,5 +68,12 @@ test('VectorTileFeature', function(t) {
     t.ok(emptyFeature, 'can be created with no values');
     t.ok(Array.isArray(VectorTileFeature.types));
     t.deepEqual(VectorTileFeature.types, ['Unknown', 'Point', 'LineString', 'Polygon']);
+    t.end();
+});
+
+test('https://github.com/mapbox/vector-tile-js/issues/15', function(t) {
+    var data = fs.readFileSync(__dirname + '/fixtures/lots-of-tags.vector.pbf');
+    var tile = new VectorTile(new Protobuf(data));
+    t.ok(tile.layers["stuttgart-rails"].feature(0));
     t.end();
 });
