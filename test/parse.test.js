@@ -55,6 +55,30 @@ test('parsing vector tiles', function(t) {
         t.deepEqual(building, [ [ { x: 1, y: 2 }, { x: 3, y: 4 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
         t.end();
     });
+
+    t.test('should convert to GeoJSON', function() {
+        var tile = new VectorTile(new Protobuf(data));
+        var geojson = tile.toGeoJSON();
+
+        t.deepEqual(Object.keys(geojson), [
+            'landuse', 'waterway', 'water', 'barrier_line', 'building',
+            'landuse_overlay', 'tunnel', 'road', 'bridge', 'place_label',
+            'water_label', 'poi_label', 'road_label', 'waterway_label' ]);
+
+        t.equal(geojson.poi_label.features.length, 558);
+
+        var park = geojson.poi_label.features[11];
+
+        t.equal(park.properties.name, 'Mauerpark');
+        t.equal(park.properties.type, 'Park');
+
+        // Check point geometry
+        t.deepEqual(park.geometry.coordinates, [ [ [3898, 1731] ] ]);
+
+        // Check line geometry
+        t.deepEqual(geojson.road.features[656].geometry.coordinates, [ [1988, 306], [1808, 321], [1506, 347] ]);
+        t.end();
+    });
 });
 
 test('VectorTileLayer', function(t) {
