@@ -9,6 +9,7 @@
     "point-geometry": "0.0.0"
   },
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "coveralls": "~2.10.0",
     "istanbul": "~0.2.11",
     "jshint": "^2.5.1",
