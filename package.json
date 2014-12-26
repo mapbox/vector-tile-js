@@ -13,7 +13,7 @@
     "coveralls": "~2.10.0",
     "istanbul": "~0.2.11",
     "jshint": "^2.5.1",
-    "pbf": "^1.1.1",
+    "pbf": "^1.1.3",
     "tape": "~2.13.3"
   },
   "jshintConfig": {

@@ -1,5 +1,5 @@
 var Pbf = require('pbf'),
-    VectorTile = VectorTile = require('..').VectorTile,
+    VectorTile = require('..').VectorTile,
     Benchmark = require('benchmark'),
     fs = require('fs');
 
