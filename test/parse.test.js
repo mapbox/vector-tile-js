@@ -58,13 +58,13 @@ test('parsing vector tiles', function(t) {
 });
 
 test('VectorTileLayer', function(t) {
-    var emptyLayer = new VectorTileLayer(new Buffer([]));
+    var emptyLayer = new VectorTileLayer(new Protobuf(new Buffer([])));
     t.ok(emptyLayer, 'can be created with no values');
     t.end();
 });
 
 test('VectorTileFeature', function(t) {
-    var emptyFeature = new VectorTileFeature(new Buffer([]));
+    var emptyFeature = new VectorTileFeature(new Protobuf(new Buffer([])));
     t.ok(emptyFeature, 'can be created with no values');
     t.ok(Array.isArray(VectorTileFeature.types));
     t.deepEqual(VectorTileFeature.types, ['Unknown', 'Point', 'LineString', 'Polygon']);
