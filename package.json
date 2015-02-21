@@ -6,7 +6,8 @@
   "license": "BSD",
   "main": "index.js",
   "dependencies": {
-    "point-geometry": "0.0.0"
+    "point-geometry": "0.0.0",
+    "sphericalmercator": "^1.0.3"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
