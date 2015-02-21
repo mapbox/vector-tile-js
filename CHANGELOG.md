@@ -1,8 +1,11 @@
 ## vector-tile-js changelog
 
+### 1.1.0 (2015-02-21)
 
-### 0.0.1
+- Added VectorTileFeature#toGeoJSON()
 
-Tagged April 13, 2014
+### 1.0.0 (2014-12-26)
+
+### 0.0.1 (2014-04-13)
 
 - Initial release
