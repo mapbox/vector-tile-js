@@ -7,7 +7,10 @@ This library reads [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-s
 ## Example
 
 ```js
-var tile = new VectorTile(data);
+var VectorTile = require('vector-tile');
+var Protobuf = require('pbf');
+
+var tile = new VectorTile(new Protobuf(data));
 
 // Contains a map of all layers
 tile.layers;
@@ -42,8 +45,8 @@ An object that parses vector tile data and makes it readable.
 
 #### Constructor
 
-- **new VectorTile(buffer[, end])** &mdash;
-  parses the vector tile data given a [Protobuf](https://github.com/mapbox/pbf) buffer,
+- **new VectorTile(protobuf[, end])** &mdash;
+  parses the vector tile data contained in the given [Protobuf](https://github.com/mapbox/pbf) object,
   saving resulting layers in the created object as a `layers` property. Optionally accepts end index.
 
 #### Properties
