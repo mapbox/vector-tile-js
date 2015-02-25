@@ -1,5 +1,10 @@
 ## vector-tile-js changelog
 
+### 1.1.1 (2015-02-25)
+
+- Remove sphericalmercator dependency
+- Correctly handle MultiPoint and MultiLineString features in toGeoJSON()
+
 ### 1.1.0 (2015-02-21)
 
 - Added VectorTileFeature#toGeoJSON()
