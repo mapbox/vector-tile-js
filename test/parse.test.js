@@ -111,6 +111,18 @@ test('parsing vector tiles', function(t) {
                 [13.392248153686523, 52.549737195107554], [13.392248153686523, 52.54974045706258],
                 [13.392285704612732, 52.54974045706258]]]);
 
+        function geoJSONFromFixture(name) {
+            var tile = new VectorTile(new Protobuf(fs.readFileSync(__dirname + '/fixtures/' + name + '.pbf')));
+            return tile.layers.geojson.feature(0).toGeoJSON(0, 0, 0);
+        }
+
+        // https://github.com/mapbox/vector-tile-spec/issues/30
+        t.equal(geoJSONFromFixture("singleton-multi-point").geometry.type, 'Point');
+        t.equal(geoJSONFromFixture("singleton-multi-line").geometry.type, 'LineString');
+
+        t.equal(geoJSONFromFixture("multi-point").geometry.type, 'MultiPoint');
+        t.equal(geoJSONFromFixture("multi-line").geometry.type, 'MultiLineString');
+
         t.end();
     })
 });
