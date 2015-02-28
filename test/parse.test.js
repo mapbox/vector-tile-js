@@ -147,3 +147,10 @@ test('https://github.com/mapbox/vector-tile-js/issues/15', function(t) {
     t.ok(tile.layers["stuttgart-rails"].feature(0));
     t.end();
 });
+
+test('https://github.com/mapbox/mapbox-gl-js/issues/1019', function(t) {
+    var data = fs.readFileSync(__dirname + '/fixtures/12-1143-1497.vector.pbf');
+    var tile = new VectorTile(new Protobuf(data));
+    t.ok(tile.layers["water"].feature(1).loadGeometry());
+    t.end();
+});
