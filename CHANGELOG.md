@@ -1,5 +1,9 @@
 ## vector-tile-js changelog
 
+### 1.1.2 (2015-03-05)
+
+- Fixed decoding of negative values in feature properties
+
 ### 1.1.1 (2015-02-25)
 
 - Remove sphericalmercator dependency
