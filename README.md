@@ -85,3 +85,4 @@ An object that contains the data for a single feature.
 - **loadGeometry()** &mdash; parses feature geometry and returns an array of
   [Point](https://github.com/mapbox/point-geometry) arrays (with each point having `x` and `y` properties)
 - **bbox()** &mdash; calculates and returns the bounding box of the feature in the form `[x1, y1, x2, y2]`
+- **toGeoJSON(x, y, z)** &mdash; returns a GeoJSON representation of the feature. (`x`, `y`, and `z` refer to the containing tile's index.)
