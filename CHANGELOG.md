@@ -1,5 +1,9 @@
 ## vector-tile-js changelog
 
+### 1.1.3 (2015-06-15)
+
+- Workaround for https://github.com/mapbox/mapnik-vector-tile/issues/90
+
 ### 1.1.2 (2015-03-05)
 
 - Fixed decoding of negative values in feature properties
