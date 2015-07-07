@@ -24,6 +24,20 @@ landuse.length;
 landuse.feature(0);
 ```
 
+Vector tiles contained in [serialtiles-spec](https://github.com/mapbox/serialtiles-spec)
+are gzip-encoded, so a complete example of parsing them with the native
+zlib module would be:
+
+```js
+var VectorTile = require('vector-tile').VectorTile;
+var Protobuf = require('pbf');
+var zlib = require('zlib');
+
+zlib.gunzip(data, function(err, buffer) {
+    var tile = new VectorTile(new Protobuf(buffer));
+});
+```
+
 ## Depends
 
  - Node.js v0.10.x or v0.8.x
