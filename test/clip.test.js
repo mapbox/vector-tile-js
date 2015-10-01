@@ -132,8 +132,8 @@ test('check geometry clipping', function(t) {
 
       // define child tile
       feature.dz = 2;
-      feature.xPos = 2;
-      feature.yPos = 2;
+      feature.xPos = 3;
+      feature.yPos = 3;
 
       // load geometry (should be clipped)
       var geom = feature.loadGeometry();
