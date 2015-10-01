@@ -75,7 +75,7 @@ test('check geometry clipping', function(t) {
       var geom = feature.loadGeometry();
 
         // check result
-        t.deepEqual(geom, [[{ x: 1024, y: 3072 }], [{ x: 4096, y: 1024 }], [{ x: 4906, y: 4096 }]]);
+        t.deepEqual(geom, [[{ x: 1024, y: 3072 }], [{ x: 4096, y: 1024 }], [{ x: 4096, y: 4096 }]]);
 
       t.end();
     });
