@@ -8,21 +8,10 @@ var test = require('tape'),
 test('check geometry clipping', function(t) {
     var data = fs.readFileSync(__dirname + '/fixtures/clip.pbf');
 
-    //t.test('should have all layers', function(t) {
-    //    var tile = new VectorTile(new Protobuf(data));
-
-    //    t.deepEqual(Object.keys(tile.layers), [
-    //        'polygon', 'line', 'point' ]);
-
-    //    t.end();
-    //});
-
     t.test('should return expected polygon', function(t) {
         var tile = new VectorTile(new Protobuf(data));
 
         var feature = tile.layers.polygon.feature(0);
-        //t.deepEqual(feature.extent, 32768);
-        //t.deepEqual(feature.type, 3);
 
         // define child tile
         feature.dz = 2;
@@ -42,8 +31,6 @@ test('check geometry clipping', function(t) {
       var tile = new VectorTile(new Protobuf(data));
 
       var feature = tile.layers.line.feature(0);
-      //t.deepEqual(feature.extent, 32768);
-      //t.deepEqual(feature.type, 2);
 
       // define child tile
       feature.dz = 2;
@@ -63,8 +50,6 @@ test('check geometry clipping', function(t) {
       var tile = new VectorTile(new Protobuf(data));
 
       var feature = tile.layers.point.feature(0);
-      //t.deepEqual(feature.extent, 32768);
-      //t.deepEqual(feature.type, 1);
 
       // define child tile
       feature.dz = 2;
@@ -85,8 +70,6 @@ test('check geometry clipping', function(t) {
       var tile = new VectorTile(new Protobuf(data));
 
       var feature = tile.layers.polygon.feature(0);
-      //t.deepEqual(feature.extent, 32768);
-      //t.deepEqual(feature.type, 3);
 
       // define child tile
       feature.dz = 2;
@@ -97,7 +80,7 @@ test('check geometry clipping', function(t) {
       var geom = feature.loadGeometry();
 
       // check result
-      t.deepEqual(geom, null);
+      t.equal(geom, null);
 
       t.end();
     });
@@ -106,8 +89,6 @@ test('check geometry clipping', function(t) {
       var tile = new VectorTile(new Protobuf(data));
 
       var feature = tile.layers.line.feature(0);
-      //t.deepEqual(feature.extent, 32768);
-      //t.deepEqual(feature.type, 2);
 
       // define child tile
       feature.dz = 2;
@@ -118,7 +99,7 @@ test('check geometry clipping', function(t) {
       var geom = feature.loadGeometry();
 
       // check result
-      t.deepEqual(geom, null);
+      t.equal(geom, null);
 
       t.end();
     });
@@ -127,8 +108,6 @@ test('check geometry clipping', function(t) {
       var tile = new VectorTile(new Protobuf(data));
 
       var feature = tile.layers.point.feature(0);
-      //t.deepEqual(feature.extent, 32768);
-      //t.deepEqual(feature.type, 1);
 
       // define child tile
       feature.dz = 2;
@@ -139,7 +118,7 @@ test('check geometry clipping', function(t) {
       var geom = feature.loadGeometry();
 
       // check result
-      t.deepEqual(geom, null);
+      t.equal(geom, null);
 
       t.end();
     });
