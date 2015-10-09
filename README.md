@@ -97,7 +97,9 @@ An object that contains the data for a single feature.
 
 #### Methods
 
-- **loadGeometry()** &mdash; parses feature geometry and returns an array of
-  [Point](https://github.com/mapbox/point-geometry) arrays (with each point having `x` and `y` properties)
+- **loadGeometry()** &mdash; returns feature geometry. Since the vector tile specification does not distinguish between Point and MultiPoint, LineString and MultiLineString, or Polygon and MultiPolygon, the result is always treated as a "Multi" variant:
+ - For point features, the return value is an array of [`Point`](https://github.com/mapbox/point-geometry)s.
+ - For line features, it is an array of arrays of `Point`s.
+ - For polygon features, it is an array of arrays of arrays of `Point`s.
 - **bbox()** &mdash; calculates and returns the bounding box of the feature in the form `[x1, y1, x2, y2]`
 - **toGeoJSON(x, y, z)** &mdash; returns a GeoJSON representation of the feature. (`x`, `y`, and `z` refer to the containing tile's index.)

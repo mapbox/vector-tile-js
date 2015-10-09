@@ -1,5 +1,13 @@
 ## vector-tile-js changelog
 
+### 2.0.0 (in progress)
+
+- The structure of the return value of `loadGeometry()` was normalized. For point features, `loadGeometry()` now returns
+  an array of points. For polygon features, `loadGeometry()` now classifies rings and groups them into outer and inner
+  rings, using an extra level of array nesting. I.e., the return value for polygons is an array of arrays of arrays of
+  Points. The structure for line features (array of arrays of points) is unchanged.
+- `toGeoJSON()` now classifies polygons into `Polygon` and `MultiPolygon` types based on ring structure.
+
 ### 1.1.3 (2015-06-15)
 
 - Workaround for https://github.com/mapbox/mapnik-vector-tile/issues/90
