@@ -36,17 +36,17 @@ test('parsing vector tiles', function(t) {
         t.equal(park.properties.type, 'Park');
 
         // Check point geometry
-        t.deepEqual(park.loadGeometry(), [ { x: 3898, y: 1731 } ]);
+        t.deepEqual(park.geometry, [ { x: 3898, y: 1731 } ]);
 
         // Check line geometry
-        t.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
+        t.deepEqual(tile.layers.road.feature(656).geometry, [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
         t.end();
     });
 
     t.test('changing first point of a polygon should not change last point', function(t) {
         var tile = new VectorTile(new Protobuf(data));
 
-        var building = tile.layers.building.feature(0).loadGeometry();
+        var building = tile.layers.building.feature(0).geometry;
         t.deepEqual(building, [ [ [ { x: 2039, y: -32 }, { x: 2035, y: -31 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ] ]);
         building[0][0][0].x = 1;
         building[0][0][0].y = 2;
@@ -159,6 +159,6 @@ test('https://github.com/mapbox/vector-tile-js/issues/15', function(t) {
 test('https://github.com/mapbox/mapbox-gl-js/issues/1019', function(t) {
     var data = fs.readFileSync(__dirname + '/fixtures/12-1143-1497.vector.pbf');
     var tile = new VectorTile(new Protobuf(data));
-    t.ok(tile.layers["water"].feature(1).loadGeometry());
+    t.ok(tile.layers["water"].feature(1).geometry);
     t.end();
 });
