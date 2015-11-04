@@ -25,7 +25,7 @@
     "node": true
   },
   "scripts": {
-    "test": "jshint lib && tape test/parse.test.js && tape test/clip.test.js",
+    "test": "jshint lib && tape test/*.test.js",
     "cov": "istanbul cover ./node_modules/.bin/tape test/parse.test.js && coveralls < ./coverage/lcov.info"
   }
 }
