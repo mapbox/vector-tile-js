@@ -1,5 +1,9 @@
 ## vector-tile-js changelog
 
+### 1.2.0 (2015-12-10)
+
+- Added "id" property to toGeoJSON() output
+
 ### 1.1.3 (2015-06-15)
 
 - Workaround for https://github.com/mapbox/mapnik-vector-tile/issues/90
