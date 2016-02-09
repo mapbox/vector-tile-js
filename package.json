@@ -15,7 +15,9 @@
     "mapnik": "^3.1.6",
     "jshint": "^2.6.3",
     "pbf": "^1.3.2",
-    "tape": "~3.5.0"
+    "tape": "~3.5.0",
+    "eslint": "~1.00.0",
+    "eslint-config-unstyled": "^1.1.0"
   },
   "jshintConfig": {
     "trailing": true,
@@ -25,7 +27,7 @@
     "node": true
   },
   "scripts": {
-    "test": "jshint lib && tape test/parse.test.js",
+    "test": "eslint lib index.js && jshint lib && tape test/parse.test.js",
     "cov": "istanbul cover ./node_modules/.bin/tape test/parse.test.js && coveralls < ./coverage/lcov.info"
   }
 }
