@@ -36,7 +36,7 @@ test('parsing vector tiles', function(t) {
         t.equal(park.properties.type, 'Park');
 
         // Check point geometry
-        t.deepEqual(park.loadGeometry(), [ [ { x: 3898, y: 1731 } ] ]);
+        t.deepEqual(park.loadGeometry(), [ { x: 3898, y: 1731 } ]);
 
         // Check line geometry
         t.deepEqual(tile.layers.road.feature(656).loadGeometry(), [ [ { x: 1988, y: 306 }, { x: 1808, y: 321 }, { x: 1506, y: 347 } ] ]);
@@ -47,12 +47,12 @@ test('parsing vector tiles', function(t) {
         var tile = new VectorTile(new Protobuf(data));
 
         var building = tile.layers.building.feature(0).loadGeometry();
-        t.deepEqual(building, [ [ { x: 2039, y: -32 }, { x: 2035, y: -31 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
-        building[0][0].x = 1;
-        building[0][0].y = 2;
-        building[0][1].x = 3;
-        building[0][1].y = 4;
-        t.deepEqual(building, [ [ { x: 1, y: 2 }, { x: 3, y: 4 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ]);
+        t.deepEqual(building, [ [ [ { x: 2039, y: -32 }, { x: 2035, y: -31 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ] ]);
+        building[0][0][0].x = 1;
+        building[0][0][0].y = 2;
+        building[0][0][1].x = 3;
+        building[0][0][1].y = 4;
+        t.deepEqual(building, [ [ [ { x: 1, y: 2 }, { x: 3, y: 4 }, { x: 2032, y: -31 }, { x: 2032, y: -32 }, { x: 2039, y: -32 } ] ] ]);
         t.end();
     });
 
@@ -120,9 +120,17 @@ test('parsing vector tiles', function(t) {
         // https://github.com/mapbox/vector-tile-spec/issues/30
         t.equal(geoJSONFromFixture("singleton-multi-point").geometry.type, 'Point');
         t.equal(geoJSONFromFixture("singleton-multi-line").geometry.type, 'LineString');
+        t.equal(geoJSONFromFixture("singleton-multi-polygon").geometry.type, 'Polygon');
 
         t.equal(geoJSONFromFixture("multi-point").geometry.type, 'MultiPoint');
         t.equal(geoJSONFromFixture("multi-line").geometry.type, 'MultiLineString');
+        t.equal(geoJSONFromFixture("multi-polygon").geometry.type, 'MultiPolygon');
+
+        // https://github.com/mapbox/vector-tile-js/issues/32
+        t.equal(geoJSONFromFixture("polygon-with-inner").geometry.type, 'Polygon');
+        t.equal(geoJSONFromFixture("polygon-with-inner").geometry.coordinates.length, 2);
+        t.equal(geoJSONFromFixture("multipolygon").geometry.type, 'MultiPolygon');
+        t.equal(geoJSONFromFixture("multipolygon").geometry.coordinates.length, 2);
 
         t.end();
     })
