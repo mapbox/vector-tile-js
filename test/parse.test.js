@@ -72,6 +72,7 @@ test('parsing vector tiles', function(t) {
 
         var point = tile.layers.poi_label.feature(11).toGeoJSON(8801, 5371, 14);
         t.deepEqual(point.type, 'Feature');
+        t.deepEqual(point.id, 3000003150561);
         t.deepEqual(point.properties, {
             localrank: 1,
             maki: 'park',
