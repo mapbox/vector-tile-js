@@ -142,11 +142,23 @@ test('parsing vector tiles', function(t) {
         }
 
         // https://github.com/mapbox/vector-tile-spec/issues/30
-        t.equal(geoJSONFromFixture("singleton-multi-point").geometry.type, 'Point');
-        t.equal(geoJSONFromFixture("singleton-multi-line").geometry.type, 'LineString');
+        t.ok(approximateDeepEqual(geoJSONFromFixture("singleton-multi-point").geometry, {
+            type: 'Point',
+            coordinates: [1, 2]
+        }, 1e-1));
+        t.ok(approximateDeepEqual(geoJSONFromFixture("singleton-multi-line").geometry, {
+            type: 'LineString',
+            coordinates: [[1, 2], [3, 4]]
+        }, 1e-1));
 
-        t.equal(geoJSONFromFixture("multi-point").geometry.type, 'MultiPoint');
-        t.equal(geoJSONFromFixture("multi-line").geometry.type, 'MultiLineString');
+        t.ok(approximateDeepEqual(geoJSONFromFixture("multi-point").geometry, {
+            type: 'MultiPoint',
+            coordinates: [[1, 2], [3, 4]]
+        }, 1e-1));
+        t.ok(approximateDeepEqual(geoJSONFromFixture("multi-line").geometry, {
+            type: 'MultiLineString',
+            coordinates: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+        }, 1e-1));
 
         t.end();
     })
