@@ -150,6 +150,10 @@ test('parsing vector tiles', function(t) {
             type: 'LineString',
             coordinates: [[1, 2], [3, 4]]
         }, 1e-1));
+        t.ok(approximateDeepEqual(geoJSONFromFixture("singleton-multi-polygon").geometry, {
+            type: 'Polygon',
+            coordinates: [[[1, 0], [0, 0], [1, 1], [1, 0]]]
+        }, 1e-1));
 
         t.ok(approximateDeepEqual(geoJSONFromFixture("multi-point").geometry, {
             type: 'MultiPoint',
@@ -158,6 +162,20 @@ test('parsing vector tiles', function(t) {
         t.ok(approximateDeepEqual(geoJSONFromFixture("multi-line").geometry, {
             type: 'MultiLineString',
             coordinates: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+        }, 1e-1));
+        t.ok(approximateDeepEqual(geoJSONFromFixture("multi-polygon").geometry, {
+            type: 'MultiPolygon',
+            coordinates: [[[[1, 0], [0, 0], [1, 1], [1, 0]]], [[[-1, -1], [-1, 0], [0, 0], [-1, -1]]]]
+        }, 1e-1));
+
+        // https://github.com/mapbox/vector-tile-js/issues/32
+        t.ok(approximateDeepEqual(geoJSONFromFixture("polygon-with-inner").geometry, {
+            type: 'Polygon',
+            coordinates: [[[2, -2], [-2, -2], [-2, 2], [2, 2], [2, -2]], [[-1, 1], [-1, -1], [1, -1], [1, 1], [-1, 1]]]
+        }, 1e-1));
+        t.ok(approximateDeepEqual(geoJSONFromFixture("stacked-multipolygon").geometry, {
+            type: 'MultiPolygon',
+            coordinates: [[[[2, -2], [-2, -2], [-2, 2], [2, 2], [2, -2]]], [[[1, -1], [-1, -1], [-1, 1], [1, 1], [1, -1]]]]
         }, 1e-1));
 
         t.end();
