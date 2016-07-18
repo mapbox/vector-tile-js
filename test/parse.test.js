@@ -58,6 +58,8 @@ test('parsing vector tiles', function(t) {
             var park = tile.layers.poi_label.feature(1e9);
         }, 'throws on reading a feature out of bounds');
 
+        t.equal(park.id, 3000003150561);
+
         t.equal(park.properties.name, 'Mauerpark');
         t.equal(park.properties.type, 'Park');
 

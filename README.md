@@ -93,6 +93,7 @@ An object that contains the data for a single feature.
 
 - **type** (`Number`) &mdash; type of the feature (also see `VectorTileFeature.types`)
 - **extent** (`Number`) &mdash; feature extent size
+- **id** (`Number`) &mdash; feature identifier, if present
 - **properties** (`Object`) &mdash; object literal with feature properties
 
 #### Methods
