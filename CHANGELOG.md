@@ -1,5 +1,9 @@
 ## vector-tile-js changelog
 
+### 1.3.0 (2016-07-18)
+
+- Added "id" property to VectorTileFeature (#43)
+
 ### 1.2.1 (2016-05-18)
 
 - Fixed geometry structure of MultiPoints, Polygons, and MultiPolygons in toGeoJSON()
