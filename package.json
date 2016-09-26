@@ -27,7 +27,7 @@
     "node": true
   },
   "scripts": {
-    "test": "eslint lib index.js && jshint lib && tape test/parse.test.js",
+    "test": "eslint lib index.js && jshint lib && tape test/*.test.js",
     "cov": "istanbul cover ./node_modules/.bin/tape test/parse.test.js && coveralls < ./coverage/lcov.info"
   }
 }
