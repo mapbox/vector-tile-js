@@ -47,7 +47,7 @@ zlib.gunzip(data, function(err, buffer) {
 
 To install:
 
-    npm install vector-tile
+    npm install @mapbox/vector-tile
 
 
 ## API Reference
