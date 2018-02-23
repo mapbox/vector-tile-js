@@ -12,7 +12,7 @@
     "benchmark": "^1.0.0",
     "coveralls": "~2.11.2",
     "istanbul": "~0.3.6",
-    "mapnik": "^3.6.0",
+    "mapnik": "~3.6.0",
     "jshint": "^2.6.3",
     "pbf": "^1.3.2",
     "tape": "~3.5.0",
