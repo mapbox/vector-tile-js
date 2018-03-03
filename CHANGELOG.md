@@ -1,5 +1,10 @@
 ## vector-tile-js changelog
 
+### 1.3.1 (2017-03-02)
+
+- Fix bug causing infinite loop when parsing ClosePath command (#61) h/t @sanjin-saric
+- Pin node-mapnik dependency to `~3.6.0` (#62, see also https://github.com/mapnik/node-mapnik/issues/848)
+
 ### 1.3.0 (2016-07-18)
 
 - Added "id" property to VectorTileFeature (#43)
