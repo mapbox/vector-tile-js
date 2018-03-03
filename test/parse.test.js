@@ -211,3 +211,15 @@ test('https://github.com/mapbox/mapbox-gl-js/issues/1019', function(t) {
     t.ok(tile.layers["water"].feature(1).loadGeometry());
     t.end();
 });
+
+test('https://github.com/mapbox/vector-tile-js/issues/60', function(t) {
+    var data = fs.readFileSync(__dirname + '/fixtures/multipolygon-with-closepath.pbf');
+    var tile = new VectorTile(new Protobuf(data));
+    for (var id in tile.layers) {
+        var layer = tile.layers[id];
+        for (var i = 0; i < layer.length; i++) {
+            layer.feature(i).loadGeometry();
+        }
+    }
+    t.end();
+});
