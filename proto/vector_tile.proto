@@ -37,10 +37,11 @@ message tile {
         // Contains a stream of commands and parameters (vertices). The
         // repeat count is shifted to the left by 3 bits. This means
         // that the command has 3 bits (0-7). The repeat count
-        // indicates how often this command is to be repeated. Defined
-        // commands are:
-        // - MoveTo:    1   (2 parameters follow)
-        // - LineTo:    2   (2 parameters follow)
+        // indicates how often this command is to be repeated. MoveTo and LineTo
+        // commands should be followed by 2 parameters unless `dimensions` is set
+        // on the enclosing layer to 3. Defined commands are:
+        // - MoveTo:    1   (2-3 parameters follow)
+        // - LineTo:    2   (2-3 parameters follow)
         // - ClosePath: 7   (no parameters follow)
         //
         // Ex.: MoveTo(3, 6), LineTo(8, 12), LineTo(20, 34), ClosePath
@@ -54,7 +55,7 @@ message tile {
         // Commands are encoded as uint32 varints, vertex parameters are
         // encoded as sint32 varints (zigzag). Vertex parameters are
         // also encoded as deltas to the previous position. The original
-        // position is (0,0)
+        // position is (0,0) (or (0, 0, 0) in 3 dimensions)
         repeated uint32 geometry = 4 [ packed = true ];
     }
 
@@ -78,6 +79,9 @@ message tile {
 
         // The bounding box in this tile spans from 0..4095 units
         optional uint32 extent = 5 [ default = 4096 ];
+
+        // TODO update with official proto file when finalized
+        optional uint32 dimensions = 6 [ default = 2 ];
 
         extensions 16 to max;
     }

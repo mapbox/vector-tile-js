@@ -2,6 +2,8 @@ var mapnik = require('mapnik');
 var path = require('path');
 var fs = require('fs');
 
+// TODO since node-mapnik will not support vt3 (?), this won't work to generate vt3 fixtures
+
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 
 var fixtures = {
