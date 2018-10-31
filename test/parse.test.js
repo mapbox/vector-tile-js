@@ -191,7 +191,7 @@ test('VectorTileLayer', function(t) {
 });
 
 test('VectorTileFeature', function(t) {
-    var emptyFeature = new VectorTileFeature(new Protobuf(new Buffer([])));
+    var emptyFeature = new VectorTileFeature(new Protobuf(new Buffer([])), undefined, {});
     t.ok(emptyFeature, 'can be created with no values');
     t.ok(Array.isArray(VectorTileFeature.types));
     t.deepEqual(VectorTileFeature.types, ['Unknown', 'Point', 'LineString', 'Polygon']);
