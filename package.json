@@ -10,14 +10,14 @@
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
-    "coveralls": "~2.11.2",
+    "coveralls": "^3.0.3",
+    "eslint": "^5.15.3",
+    "eslint-config-unstyled": "^1.1.0",
     "istanbul": "~0.3.6",
-    "mapnik": "~3.6.0",
     "jshint": "^2.6.3",
+    "mapnik": "^4.2.1",
     "pbf": "^1.3.2",
-    "tape": "~3.5.0",
-    "eslint": "~1.00.0",
-    "eslint-config-unstyled": "^1.1.0"
+    "tape": "^4.10.1"
   },
   "jshintConfig": {
     "trailing": true,
