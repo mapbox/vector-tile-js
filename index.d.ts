@@ -13,7 +13,7 @@ export class VectorTileFeature {
     properties: {[_: string]: string | number | boolean};
     loadGeometry(): Array<Array<Point>>;
     toGeoJSON(x: number, y: number, z: number): GeoJSON.Feature;
-    bbox(): [number, number, number, number];
+    bbox?(): [number, number, number, number];
 }
 
 export class VectorTileLayer {
