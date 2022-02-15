@@ -76,7 +76,7 @@ An object that contains the data for a single vector tile layer.
 #### Properties
 
 - **version** (`Number`, default: `1`)
-- **name** (`String) `&mdash; layer name
+- **name** (`String`) &mdash; layer name
 - **extent** (`Number`, default: `4096`) &mdash; tile extent size
 - **length** (`Number`) &mdash; number of features in the layer
 
