@@ -101,4 +101,4 @@ An object that contains the data for a single feature.
 - **loadGeometry()** &mdash; parses feature geometry and returns an array of
   [Point](https://github.com/mapbox/point-geometry) arrays (with each point having `x` and `y` properties)
 - **bbox()** &mdash; calculates and returns the bounding box of the feature in the form `[x1, y1, x2, y2]`
-- **toGeoJSON(x, y, z)** &mdash; returns a GeoJSON representation of the feature. (`x`, `y`, and `z` refer to the containing tile's index.)
+- **toGeoJSON(x, y, z, project)** &mdash; returns a GeoJSON representation of the feature. `x`, `y`, and `z` refer to the containing tile's index. An optional project function can be used if the projection is not EPSG:3857, it will receive coordinates in the form `[x, y]` with `x` from 0.0 to 1.0 and `y` depending on the projection used, and it must return `[x, y]` in EPSG:4326.
