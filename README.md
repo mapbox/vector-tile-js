@@ -7,15 +7,15 @@ This library reads [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-s
 ## Example
 
 ```js
-var VectorTile = require('@mapbox/vector-tile').VectorTile;
-var Protobuf = require('pbf');
+import {VectorTile} from '@mapbox/vector-tile';
+import Protobuf from 'pbf';
 
-var tile = new VectorTile(new Protobuf(data));
+const tile = new VectorTile(new Protobuf(data));
 
 // Contains a map of all layers
 tile.layers;
 
-var landuse = tile.layers.landuse;
+const landuse = tile.layers.landuse;
 
 // Amount of features in this layer
 landuse.length;
@@ -29,19 +29,13 @@ are gzip-encoded, so a complete example of parsing them with the native
 zlib module would be:
 
 ```js
-var VectorTile = require('vector-tile').VectorTile;
-var Protobuf = require('pbf');
-var zlib = require('zlib');
+import {VectorTile} from '@mapbox/vector-tile';
+import Protobuf from 'pbf';
+import {gunzipSync} from 'zlib';
 
-zlib.gunzip(data, function(err, buffer) {
-    var tile = new VectorTile(new Protobuf(buffer));
-});
+const buffer = gunzipSync(data);
+const tile = new VectorTile(new Protobuf(buffer));
 ```
-
-## Depends
-
- - Node.js v0.10.x or v0.8.x
-
 
 ## Install
 
@@ -51,7 +45,6 @@ To install:
 
 
 ## API Reference
-
 
 ### VectorTile
 
