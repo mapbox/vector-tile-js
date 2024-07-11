@@ -1,8 +1,8 @@
 
 import Point from '@mapbox/point-geometry';
 
-/** @typedef {import('pbf').default} Pbf */
-/** @typedef {import('geojson').Feature} Feature */
+/** @import Pbf from 'pbf' */
+/** @import {Feature} from 'geojson' */
 
 export class VectorTileFeature {
     /**
