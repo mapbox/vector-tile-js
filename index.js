@@ -19,6 +19,7 @@ export class VectorTileFeature {
         this.properties = {};
 
         this.extent = extent;
+        /** @type {0 | 1 | 2 | 3} */
         this.type = 0;
 
         /** @type {number | undefined} */
