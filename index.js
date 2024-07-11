@@ -25,7 +25,6 @@ export class VectorTileFeature {
         /** @type {number | undefined} */
         this.id = undefined;
 
-        // Private
         this._pbf = pbf;
         this._geometry = -1;
         this._keys = keys;
@@ -212,7 +211,7 @@ VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
 function readFeature(tag, feature, pbf) {
     if (tag === 1) feature.id = pbf.readVarint();
     else if (tag === 2) readTag(pbf, feature);
-    else if (tag === 3) feature.type = pbf.readVarint();
+    else if (tag === 3) feature.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
     else if (tag === 4) feature._geometry = pbf.pos;
 }
 
