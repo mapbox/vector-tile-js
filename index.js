@@ -21,10 +21,9 @@ export class VectorTileFeature {
         this.extent = extent;
         this.type = 0;
 
-        /** @type {number | string | void} */
+        /** @type {number | undefined} */
         this.id = undefined;
 
-        // Private
         this._pbf = pbf;
         this._geometry = -1;
         this._keys = keys;
