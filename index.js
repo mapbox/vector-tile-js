@@ -1,12 +1,28 @@
 
 import Point from '@mapbox/point-geometry';
 
+/** @typedef {import('pbf').default} Pbf */
+/** @typedef {import('geojson').Feature} Feature */
+
 export class VectorTileFeature {
+    /**
+     * @param {Pbf} pbf
+     * @param {number} end
+     * @param {number} extent
+     * @param {string[]} keys
+     * @param {unknown[]} values
+     */
     constructor(pbf, end, extent, keys, values) {
         // Public
+
+        /** @type {Record<string, unknown>} */
         this.properties = {};
+
         this.extent = extent;
         this.type = 0;
+
+        /** @type {number | string | void} */
+        this.id = undefined;
 
         // Private
         this._pbf = pbf;
@@ -22,12 +38,17 @@ export class VectorTileFeature {
         pbf.pos = this._geometry;
 
         const end = pbf.readVarint() + pbf.pos;
+
+        /** @type Point[][] */
         const lines = [];
-        let cmd = 1,
-            length = 0,
-            x = 0,
-            y = 0,
-            line;
+
+        /** @type Point[] | undefined */
+        let line;
+
+        let cmd = 1;
+        let length = 0;
+        let x = 0;
+        let y = 0;
 
         while (pbf.pos < end) {
             if (length <= 0) {
@@ -47,7 +68,7 @@ export class VectorTileFeature {
                     line = [];
                 }
 
-                line.push(new Point(x, y));
+                if (line) line.push(new Point(x, y));
 
             } else if (cmd === 7) {
 
@@ -57,7 +78,7 @@ export class VectorTileFeature {
                 }
 
             } else {
-                throw new Error(`unknown command ${  cmd}`);
+                throw new Error(`unknown command ${cmd}`);
             }
         }
 
@@ -98,72 +119,80 @@ export class VectorTileFeature {
                 if (y > y2) y2 = y;
 
             } else if (cmd !== 7) {
-                throw new Error(`unknown command ${  cmd}`);
+                throw new Error(`unknown command ${cmd}`);
             }
         }
 
         return [x1, y1, x2, y2];
     }
 
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     * @return {Feature}
+     */
     toGeoJSON(x, y, z) {
         const size = this.extent * Math.pow(2, z),
             x0 = this.extent * x,
-            y0 = this.extent * y;
-        let type = VectorTileFeature.types[this.type],
-            coords = this.loadGeometry();
+            y0 = this.extent * y,
+            vtCoords = this.loadGeometry();
 
-        function project(line) {
-            for (let j = 0; j < line.length; j++) {
-                const p = line[j], y2 = 180 - (p.y + y0) * 360 / size;
-                line[j] = [
-                    (p.x + x0) * 360 / size - 180,
-                    360 / Math.PI * Math.atan(Math.exp(y2 * Math.PI / 180)) - 90
-                ];
-            }
+        /** @param {Point} p */
+        function projectPoint(p) {
+            return [
+                (p.x + x0) * 360 / size - 180,
+                360 / Math.PI * Math.atan(Math.exp((1 - (p.y + y0) * 2 / size) * Math.PI)) - 90
+            ];
         }
 
-        switch (this.type) {
-        case 1:
+        /** @param {Point[]} line */
+        function projectLine(line) {
+            return line.map(projectPoint);
+        }
+
+        /** @type {Feature["geometry"]} */
+        let geometry;
+
+        if (this.type === 1) {
             const points = [];
-            for (let i = 0; i < coords.length; i++) {
-                points[i] = coords[i][0];
+            for (const line of vtCoords) {
+                points.push(line[0]);
             }
-            coords = points;
-            project(coords);
-            break;
+            const coordinates = projectLine(points);
+            geometry = points.length === 1 ?
+                {type: 'Point', coordinates: coordinates[0]} :
+                {type: 'MultiPoint', coordinates};
 
-        case 2:
-            for (let i = 0; i < coords.length; i++) {
-                project(coords[i]);
+        } else if (this.type === 2) {
+
+            const coordinates = vtCoords.map(projectLine);
+            geometry = coordinates.length === 1 ?
+                {type: 'LineString', coordinates: coordinates[0]} :
+                {type: 'MultiLineString', coordinates};
+
+        } else if (this.type === 3) {
+            const polygons = classifyRings(vtCoords);
+            const coordinates = [];
+            for (const polygon of polygons) {
+                coordinates.push(polygon.map(projectLine));
             }
-            break;
-
-        case 3:
-            coords = classifyRings(coords);
-            for (let i = 0; i < coords.length; i++) {
-                for (let j = 0; j < coords[i].length; j++) {
-                    project(coords[i][j]);
-                }
-            }
-            break;
-        }
-
-        if (coords.length === 1) {
-            coords = coords[0];
+            geometry = coordinates.length === 1 ?
+                {type: 'Polygon', coordinates: coordinates[0]} :
+                {type: 'MultiPolygon', coordinates};
         } else {
-            type = `Multi${type}`;
+
+            throw new Error('unknown feature type');
         }
 
+        /** @type {Feature} */
         const result = {
             type: 'Feature',
-            geometry: {
-                type,
-                coordinates: coords
-            },
+            geometry,
             properties: this.properties
         };
 
-        if ('id' in this) {
+        if (this.id != null) {
             result.id = this.id;
         }
 
@@ -171,8 +200,14 @@ export class VectorTileFeature {
     }
 }
 
+/** @type {['Unknown', 'Point', 'LineString', 'Polygon']} */
 VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
 
+/**
+ * @param {number} tag
+ * @param {VectorTileFeature} feature
+ * @param {Pbf} pbf
+ */
 function readFeature(tag, feature, pbf) {
     if (tag === 1) feature.id = pbf.readVarint();
     else if (tag === 2) readTag(pbf, feature);
@@ -180,6 +215,10 @@ function readFeature(tag, feature, pbf) {
     else if (tag === 4) feature._geometry = pbf.pos;
 }
 
+/**
+ * @param {Pbf} pbf
+ * @param {VectorTileFeature} feature
+ */
 function readTag(pbf, feature) {
     const end = pbf.readVarint() + pbf.pos;
 
@@ -190,7 +229,9 @@ function readTag(pbf, feature) {
     }
 }
 
-// classifies an array of rings into polygons with outer rings and holes
+/** classifies an array of rings into polygons with outer rings and holes
+ * @param {Point[][]} rings
+ */
 export function classifyRings(rings) {
     const len = rings.length;
 
@@ -209,7 +250,7 @@ export function classifyRings(rings) {
             if (polygon) polygons.push(polygon);
             polygon = [rings[i]];
 
-        } else {
+        } else if (polygon) {
             polygon.push(rings[i]);
         }
     }
@@ -218,6 +259,7 @@ export function classifyRings(rings) {
     return polygons;
 }
 
+/** @param {Point[]} ring */
 function signedArea(ring) {
     let sum = 0;
     for (let i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
@@ -229,17 +271,27 @@ function signedArea(ring) {
 }
 
 export class VectorTileLayer {
+    /**
+     * @param {Pbf} pbf
+     * @param {number} [end]
+     */
     constructor(pbf, end) {
         // Public
         this.version = 1;
-        this.name = null;
+        this.name = '';
         this.extent = 4096;
         this.length = 0;
 
         // Private
         this._pbf = pbf;
+
+        /** @type {string[]} */
         this._keys = [];
+
+        /** @type {unknown[]} */
         this._values = [];
+
+        /** @type {number[]} */
         this._features = [];
 
         pbf.readFields(readLayer, this, end);
@@ -247,7 +299,9 @@ export class VectorTileLayer {
         this.length = this._features.length;
     }
 
-    // return feature `i` from this layer as a `VectorTileFeature`
+    /** return feature `i` from this layer as a `VectorTileFeature`
+     * @param {number} i
+     */
     feature(i) {
         if (i < 0 || i >= this._features.length) throw new Error('feature index out of bounds');
 
@@ -258,6 +312,11 @@ export class VectorTileLayer {
     }
 }
 
+/**
+ * @param {number} tag
+ * @param {VectorTileLayer} layer
+ * @param {Pbf} pbf
+ */
 function readLayer(tag, layer, pbf) {
     if (tag === 15) layer.version = pbf.readVarint();
     else if (tag === 1) layer.name = pbf.readString();
@@ -267,6 +326,9 @@ function readLayer(tag, layer, pbf) {
     else if (tag === 4) layer._values.push(readValueMessage(pbf));
 }
 
+/**
+ * @param {Pbf} pbf
+ */
 function readValueMessage(pbf) {
     let value = null;
     const end = pbf.readVarint() + pbf.pos;
@@ -287,11 +349,20 @@ function readValueMessage(pbf) {
 }
 
 export class VectorTile {
+    /**
+     * @param {Pbf} pbf
+     * @param {number} [end]
+     */
     constructor(pbf, end) {
         this.layers = pbf.readFields(readTile, {}, end);
     }
 }
 
+/**
+ * @param {number} tag
+ * @param {Record<string, VectorTileLayer>} layers
+ * @param {Pbf} pbf
+ */
 function readTile(tag, layers, pbf) {
     if (tag === 3) {
         const layer = new VectorTileLayer(pbf, pbf.readVarint() + pbf.pos);
