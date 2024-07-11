@@ -355,6 +355,7 @@ export class VectorTile {
      * @param {number} [end]
      */
     constructor(pbf, end) {
+        /** @type {Record<string, VectorTileLayer>} */
         this.layers = pbf.readFields(readTile, {}, end);
     }
 }
