@@ -11,14 +11,14 @@
   "main": "index.js",
   "types": "index.d.ts",
   "dependencies": {
-    "@mapbox/point-geometry": "~1.0.0"
+    "@mapbox/point-geometry": "~1.0.0",
+    "@types/geojson": "^7946.0.14",
+    "pbf": "^4.0.1"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.14",
     "benchmark": "^2.1.4",
     "eslint": "^9.6.0",
     "eslint-config-mourner": "^4.0.2",
-    "pbf": "^4.0.1",
     "typescript": "^5.5.3"
   },
   "scripts": {
