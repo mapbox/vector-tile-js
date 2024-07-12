@@ -19,6 +19,7 @@ export class VectorTileFeature {
         this.properties = {};
 
         this.extent = extent;
+        /** @type {0 | 1 | 2 | 3} */
         this.type = 0;
 
         /** @type {number | undefined} */
@@ -210,7 +211,7 @@ VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
 function readFeature(tag, feature, pbf) {
     if (tag === 1) feature.id = pbf.readVarint();
     else if (tag === 2) readTag(pbf, feature);
-    else if (tag === 3) feature.type = pbf.readVarint();
+    else if (tag === 3) feature.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
     else if (tag === 4) feature._geometry = pbf.pos;
 }
 
@@ -353,6 +354,7 @@ export class VectorTile {
      * @param {number} [end]
      */
     constructor(pbf, end) {
+        /** @type {Record<string, VectorTileLayer>} */
         this.layers = pbf.readFields(readTile, {}, end);
     }
 }
