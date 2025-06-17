@@ -10,12 +10,12 @@ export class VectorTileFeature {
      * @param {number} end
      * @param {number} extent
      * @param {string[]} keys
-     * @param {unknown[]} values
+     * @param {(number | string | boolean)[]} values
      */
     constructor(pbf, end, extent, keys, values) {
         // Public
 
-        /** @type {Record<string, unknown>} */
+        /** @type {Record<string, number | string | boolean>} */
         this.properties = {};
 
         this.extent = extent;
@@ -25,9 +25,13 @@ export class VectorTileFeature {
         /** @type {number | undefined} */
         this.id = undefined;
 
+        /** @private */
         this._pbf = pbf;
+        /** @private */
         this._geometry = -1;
+        /** @private */
         this._keys = keys;
+        /** @private */
         this._values = values;
 
         pbf.readFields(readFeature, this, end);
@@ -212,6 +216,7 @@ function readFeature(tag, feature, pbf) {
     if (tag === 1) feature.id = pbf.readVarint();
     else if (tag === 2) readTag(pbf, feature);
     else if (tag === 3) feature.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
+    // @ts-expect-error TS2341 deliberately accessing a private property
     else if (tag === 4) feature._geometry = pbf.pos;
 }
 
@@ -223,8 +228,10 @@ function readTag(pbf, feature) {
     const end = pbf.readVarint() + pbf.pos;
 
     while (pbf.pos < end) {
-        const key = feature._keys[pbf.readVarint()],
-            value = feature._values[pbf.readVarint()];
+        // @ts-expect-error TS2341 deliberately accessing a private property
+        const key = feature._keys[pbf.readVarint()];
+        // @ts-expect-error TS2341 deliberately accessing a private property
+        const value = feature._values[pbf.readVarint()];
         feature.properties[key] = value;
     }
 }
@@ -282,16 +289,19 @@ export class VectorTileLayer {
         this.extent = 4096;
         this.length = 0;
 
-        // Private
+        /** @private */
         this._pbf = pbf;
 
-        /** @type {string[]} */
+        /** @private
+         * @type {string[]} */
         this._keys = [];
 
-        /** @type {unknown[]} */
+        /** @private
+         * @type {(number | string | boolean)[]} */
         this._values = [];
 
-        /** @type {number[]} */
+        /** @private
+         * @type {number[]} */
         this._features = [];
 
         pbf.readFields(readLayer, this, end);
@@ -321,8 +331,11 @@ function readLayer(tag, layer, pbf) {
     if (tag === 15) layer.version = pbf.readVarint();
     else if (tag === 1) layer.name = pbf.readString();
     else if (tag === 5) layer.extent = pbf.readVarint();
+    // @ts-expect-error TS2341 deliberately accessing a private property
     else if (tag === 2) layer._features.push(pbf.pos);
+    // @ts-expect-error TS2341 deliberately accessing a private property
     else if (tag === 3) layer._keys.push(pbf.readString());
+    // @ts-expect-error TS2341 deliberately accessing a private property
     else if (tag === 4) layer._values.push(readValueMessage(pbf));
 }
 
@@ -343,6 +356,9 @@ function readValueMessage(pbf) {
             tag === 5 ? pbf.readVarint() :
             tag === 6 ? pbf.readSVarint() :
             tag === 7 ? pbf.readBoolean() : null;
+    }
+    if (value == null) {
+        throw new Error('unknown feature value');
     }
 
     return value;
