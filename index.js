@@ -16,7 +16,7 @@ export class VectorTileFeature {
         // Public
 
         /** @type {Record<string, number | string | boolean>} */
-        this.properties = {};
+        this.properties = Object.create(null);
 
         this.extent = extent;
         /** @type {0 | 1 | 2 | 3} */
@@ -371,7 +371,7 @@ export class VectorTile {
      */
     constructor(pbf, end) {
         /** @type {Record<string, VectorTileLayer>} */
-        this.layers = pbf.readFields(readTile, {}, end);
+        this.layers = pbf.readFields(readTile, Object.create(null), end);
     }
 }
 
