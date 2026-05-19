@@ -205,3 +205,46 @@ test('https://github.com/mapbox/vector-tile-js/issues/60', () => {
         }
     }
 });
+
+test('does not mutate prototypes via a "__proto__" layer name or property key', () => {
+    // Hand-build a minimal MVT tile containing a layer named "__proto__"
+    // with one feature whose properties include a "__proto__" key.
+    const pbf = new Protobuf();
+
+    pbf.writeMessage(3, (_, p) => { // Tile.layers
+        p.writeVarintField(15, 2);                  // version
+        p.writeStringField(1, '__proto__');          // name
+        p.writeMessage(2, (_, p) => {                // feature
+            p.writeVarintField(1, 1);                // id
+            p.writePackedVarint(2, [0, 0]);          // tags: key[0] -> value[0]
+            p.writeVarintField(3, 1);                // type = POINT
+            p.writePackedVarint(4, [9, 0, 0]);       // geometry: moveTo(0,0)
+        }, null);
+        p.writeStringField(3, '__proto__');          // keys[0]
+        p.writeMessage(4, (_, p) => {                // values[0]
+            p.writeStringField(1, 'evil');
+        }, null);
+        p.writeVarintField(5, 4096);                 // extent
+    }, null);
+
+    const tile = new VectorTile(new Protobuf(pbf.finish()));
+
+    // tile.layers must keep a null prototype — i.e. its prototype wasn't
+    // hijacked by `layers["__proto__"] = layer`.
+    assert.equal(Object.getPrototypeOf(tile.layers), null);
+
+    // The "__proto__" layer is still reachable as an own property.
+    // eslint-disable-next-line no-proto, dot-notation
+    const layer = tile.layers['__proto__'];
+    assert.ok(layer instanceof VectorTileLayer);
+    assert.equal(layer.name, '__proto__');
+
+    // Feature.properties must also keep a null prototype.
+    const feature = layer.feature(0);
+    assert.equal(Object.getPrototypeOf(feature.properties), null);
+    // eslint-disable-next-line no-proto, dot-notation
+    assert.equal(feature.properties['__proto__'], 'evil');
+
+    // Sanity: a fresh {} elsewhere is untouched (no global pollution either).
+    assert.equal(({}).evil, undefined);
+});
