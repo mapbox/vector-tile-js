@@ -37,12 +37,18 @@ export class VectorTileFeature {
         while (pbf.pos < end) {
             const tag = pbf.readVarint();
             if (tag === 8) this.id = pbf.readVarint();
-            else if (tag === 18) readTag(pbf, this);
-            else if (tag === 24) this.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
-            else {
-                if (tag === 34) this._geometry = pbf.pos;
+            else if (tag === 18) {
+                const tagsEnd = pbf.readVarint() + pbf.pos;
+                while (pbf.pos < tagsEnd) {
+                    const key = keys[pbf.readVarint()];
+                    const value = values[pbf.readVarint()];
+                    this.properties[key] = value;
+                }
+            } else if (tag === 24) this.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
+            else if (tag === 34) {
+                this._geometry = pbf.pos;
                 pbf.skip(tag);
-            }
+            } else pbf.skip(tag);
         }
     }
 
@@ -74,15 +80,15 @@ export class VectorTileFeature {
 
             length--;
 
-            if (cmd === 1 || cmd === 2) {
+            if (cmd === 1) { // moveTo
                 x += pbf.readSVarint();
                 y += pbf.readSVarint();
+                if (line) lines.push(line);
+                line = [new Point(x, y)];
 
-                if (cmd === 1) { // moveTo
-                    if (line) lines.push(line);
-                    line = [];
-                }
-
+            } else if (cmd === 2) { // lineTo
+                x += pbf.readSVarint();
+                y += pbf.readSVarint();
                 if (line) line.push(new Point(x, y));
 
             } else if (cmd === 7) {
@@ -219,22 +225,6 @@ export class VectorTileFeature {
 
 /** @type {['Unknown', 'Point', 'LineString', 'Polygon']} */
 VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
-
-/**
- * @param {Pbf} pbf
- * @param {VectorTileFeature} feature
- */
-function readTag(pbf, feature) {
-    const end = pbf.readVarint() + pbf.pos;
-
-    while (pbf.pos < end) {
-        // @ts-expect-error TS2341 deliberately accessing a private property
-        const key = feature._keys[pbf.readVarint()];
-        // @ts-expect-error TS2341 deliberately accessing a private property
-        const value = feature._values[pbf.readVarint()];
-        feature.properties[key] = value;
-    }
-}
 
 /** classifies an array of rings into polygons with outer rings and holes
  * @param {Point[][]} rings
