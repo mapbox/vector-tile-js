@@ -69,6 +69,7 @@ export class VectorTileFeature {
                 const cmdLen = pbf.readVarint();
                 cmd = cmdLen & 0x7;
                 length = cmdLen >> 3;
+                if (length === 0) continue;
             }
 
             length--;
@@ -121,6 +122,7 @@ export class VectorTileFeature {
                 const cmdLen = pbf.readVarint();
                 cmd = cmdLen & 0x7;
                 length = cmdLen >> 3;
+                if (length === 0) continue;
             }
 
             length--;
@@ -306,8 +308,10 @@ export class VectorTileLayer {
         while (pbf.pos < end) {
             const tag = pbf.readVarint();
             if (tag === 10) this.name = pbf.readString();
-            else if (tag === 18) { this._features.push(pbf.pos); pbf.skip(tag); }
-            else if (tag === 26) this._keys.push(pbf.readString());
+            else if (tag === 18) {
+                this._features.push(pbf.pos);
+                pbf.skip(tag);
+            } else if (tag === 26) this._keys.push(pbf.readString());
             else if (tag === 34) this._values.push(readValueMessage(pbf));
             else if (tag === 40) this.extent = pbf.readVarint();
             else if (tag === 120) this.version = pbf.readVarint();

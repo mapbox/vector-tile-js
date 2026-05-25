@@ -263,6 +263,30 @@ test('Value message with only an unknown field throws rather than looping', () =
     assert.throws(() => new VectorTile(new Protobuf(buf)), /unknown feature value/);
 });
 
+test('skips zero-count geometry commands', () => {
+    // Build a Point feature whose geometry stream is:
+    //   MoveTo(count=0)              -> 0 | (0 << 3) = 0
+    //   MoveTo(count=1), (3, 4)      -> 1 | (1 << 3) = 9, then svarints 6, 8
+    // The leading zero-count command must be skipped, not break the loop
+    // (which would lose the real MoveTo) and not be executed (which would
+    // consume the next command's bytes as a coordinate pair).
+    const pbf = new Protobuf();
+    pbf.writeMessage(3, (_, p) => {
+        p.writeStringField(1, 'layer');
+        p.writeMessage(2, (_, p) => {
+            p.writeVarintField(1, 1);
+            p.writeVarintField(3, 1); // POINT
+            p.writePackedVarint(4, [0, 9, 6, 8]);
+        }, null);
+        p.writeVarintField(5, 4096);
+    }, null);
+
+    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const feature = tile.layers.layer.feature(0);
+    assert.deepEqual(feature.loadGeometry(), [[new Point(3, 4)]]);
+    assert.deepEqual(feature.bbox(), [3, 4, 3, 4]);
+});
+
 test('throws a clear error for a feature with no geometry (issue #39)', () => {
     const pbf = new Protobuf();
     pbf.writeMessage(3, (_, p) => {
