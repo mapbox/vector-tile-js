@@ -34,7 +34,16 @@ export class VectorTileFeature {
         /** @private */
         this._values = values;
 
-        pbf.readFields(readFeature, this, end);
+        while (pbf.pos < end) {
+            const tag = pbf.readVarint();
+            if (tag === 8) this.id = pbf.readVarint();
+            else if (tag === 18) readTag(pbf, this);
+            else if (tag === 24) this.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
+            else {
+                if (tag === 34) this._geometry = pbf.pos;
+                pbf.skip(tag);
+            }
+        }
     }
 
     loadGeometry() {
@@ -208,19 +217,6 @@ export class VectorTileFeature {
 VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
 
 /**
- * @param {number} tag
- * @param {VectorTileFeature} feature
- * @param {Pbf} pbf
- */
-function readFeature(tag, feature, pbf) {
-    if (tag === 1) feature.id = pbf.readVarint();
-    else if (tag === 2) readTag(pbf, feature);
-    else if (tag === 3) feature.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
-    // @ts-expect-error TS2341 deliberately accessing a private property
-    else if (tag === 4) feature._geometry = pbf.pos;
-}
-
-/**
  * @param {Pbf} pbf
  * @param {VectorTileFeature} feature
  */
@@ -304,7 +300,17 @@ export class VectorTileLayer {
          * @type {number[]} */
         this._features = [];
 
-        pbf.readFields(readLayer, this, end);
+        if (end === undefined) end = pbf.length;
+        while (pbf.pos < end) {
+            const tag = pbf.readVarint();
+            if (tag === 10) this.name = pbf.readString();
+            else if (tag === 18) { this._features.push(pbf.pos); pbf.skip(tag); }
+            else if (tag === 26) this._keys.push(pbf.readString());
+            else if (tag === 34) this._values.push(readValueMessage(pbf));
+            else if (tag === 40) this.extent = pbf.readVarint();
+            else if (tag === 120) this.version = pbf.readVarint();
+            else pbf.skip(tag);
+        }
 
         this.length = this._features.length;
     }
@@ -323,23 +329,6 @@ export class VectorTileLayer {
 }
 
 /**
- * @param {number} tag
- * @param {VectorTileLayer} layer
- * @param {Pbf} pbf
- */
-function readLayer(tag, layer, pbf) {
-    if (tag === 15) layer.version = pbf.readVarint();
-    else if (tag === 1) layer.name = pbf.readString();
-    else if (tag === 5) layer.extent = pbf.readVarint();
-    // @ts-expect-error TS2341 deliberately accessing a private property
-    else if (tag === 2) layer._features.push(pbf.pos);
-    // @ts-expect-error TS2341 deliberately accessing a private property
-    else if (tag === 3) layer._keys.push(pbf.readString());
-    // @ts-expect-error TS2341 deliberately accessing a private property
-    else if (tag === 4) layer._values.push(readValueMessage(pbf));
-}
-
-/**
  * @param {Pbf} pbf
  */
 function readValueMessage(pbf) {
@@ -347,15 +336,16 @@ function readValueMessage(pbf) {
     const end = pbf.readVarint() + pbf.pos;
 
     while (pbf.pos < end) {
-        const tag = pbf.readVarint() >> 3;
-
-        value = tag === 1 ? pbf.readString() :
-            tag === 2 ? pbf.readFloat() :
-            tag === 3 ? pbf.readDouble() :
-            tag === 4 ? pbf.readVarint64() :
-            tag === 5 ? pbf.readVarint() :
-            tag === 6 ? pbf.readSVarint() :
-            tag === 7 ? pbf.readBoolean() : null;
+        const tag = pbf.readVarint();
+        value =
+            tag === 10 ? pbf.readString() :
+            tag === 21 ? pbf.readFloat() :
+            tag === 25 ? pbf.readDouble() :
+            tag === 32 ? pbf.readVarint64() :
+            tag === 40 ? pbf.readVarint() :
+            tag === 48 ? pbf.readSVarint() :
+            tag === 56 ? pbf.readBoolean() :
+            (pbf.skip(tag), null);
     }
     if (value == null) {
         throw new Error('unknown feature value');
@@ -369,20 +359,16 @@ export class VectorTile {
      * @param {Pbf} pbf
      * @param {number} [end]
      */
-    constructor(pbf, end) {
+    constructor(pbf, end = pbf.length) {
         /** @type {Record<string, VectorTileLayer>} */
-        this.layers = pbf.readFields(readTile, Object.create(null), end);
-    }
-}
-
-/**
- * @param {number} tag
- * @param {Record<string, VectorTileLayer>} layers
- * @param {Pbf} pbf
- */
-function readTile(tag, layers, pbf) {
-    if (tag === 3) {
-        const layer = new VectorTileLayer(pbf, pbf.readVarint() + pbf.pos);
-        if (layer.length) layers[layer.name] = layer;
+        const layers = Object.create(null);
+        while (pbf.pos < end) {
+            const tag = pbf.readVarint();
+            if (tag === 26) {
+                const layer = new VectorTileLayer(pbf, pbf.readVarint() + pbf.pos);
+                if (layer.length) layers[layer.name] = layer;
+            } else pbf.skip(tag);
+        }
+        this.layers = layers;
     }
 }

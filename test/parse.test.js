@@ -206,6 +206,63 @@ test('https://github.com/mapbox/vector-tile-js/issues/60', () => {
     }
 });
 
+test('skips unknown fields at every nesting level', () => {
+    // Build a tile that has an unknown field on the Tile, Layer, Feature, and
+    // Value messages. Inlined readers must skip them (not infinite-loop) and
+    // still surface the known data correctly.
+    const pbf = new Protobuf();
+
+    pbf.writeStringField(99, 'unknown-tile-field');
+    pbf.writeMessage(3, (_, p) => { // Tile.layers
+        p.writeVarintField(15, 2);
+        p.writeStringField(1, 'layer');
+        p.writeVarintField(77, 42);              // unknown layer field
+        p.writeMessage(2, (_, p) => {            // feature
+            p.writeVarintField(1, 7);
+            p.writeStringField(88, 'unknown-feature-field');
+            p.writePackedVarint(2, [0, 0]);
+            p.writeVarintField(3, 1);
+            p.writePackedVarint(4, [9, 0, 0]);
+        }, null);
+        p.writeStringField(3, 'k');
+        p.writeMessage(4, (_, p) => {            // values[0]
+            p.writeStringField(66, 'unknown-value-field');
+            p.writeStringField(1, 'v');
+        }, null);
+        p.writeVarintField(5, 4096);
+    }, null);
+
+    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const layer = tile.layers.layer;
+    assert.ok(layer);
+    assert.equal(layer.length, 1);
+    const feature = layer.feature(0);
+    assert.equal(feature.id, 7);
+    assert.equal(feature.properties.k, 'v');
+});
+
+test('Value message with only an unknown field throws rather than looping', () => {
+    // Regression: readValueMessage used to infinite-loop on a Value containing
+    // no known tag (no value set + pos didn't advance).
+    const pbf = new Protobuf();
+    pbf.writeMessage(3, (_, p) => {
+        p.writeStringField(1, 'layer');
+        p.writeStringField(3, 'k');
+        p.writeMessage(4, (_, p) => {
+            p.writeStringField(99, 'only-unknown');
+        }, null);
+        p.writeMessage(2, (_, p) => {
+            p.writeVarintField(1, 1);
+            p.writePackedVarint(2, [0, 0]);
+            p.writeVarintField(3, 1);
+            p.writePackedVarint(4, [9, 0, 0]);
+        }, null);
+    }, null);
+
+    const buf = pbf.finish();
+    assert.throws(() => new VectorTile(new Protobuf(buf)), /unknown feature value/);
+});
+
 test('does not mutate prototypes via a "__proto__" layer name or property key', () => {
     // Hand-build a minimal MVT tile containing a layer named "__proto__"
     // with one feature whose properties include a "__proto__" key.
