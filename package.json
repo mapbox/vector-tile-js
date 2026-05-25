@@ -13,13 +13,13 @@
   "dependencies": {
     "@mapbox/point-geometry": "~1.1.0",
     "@types/geojson": "^7946.0.16",
-    "pbf": "^4.0.1"
+    "pbf": "^4.0.2"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "eslint": "^9.29.0",
-    "eslint-config-mourner": "^4.0.2",
-    "typescript": "^5.8.3"
+    "eslint": "^10.4.0",
+    "eslint-config-mourner": "^4.1.0",
+    "typescript": "^6.0.3"
   },
   "scripts": {
     "lint": "eslint index.js test/*.js",
