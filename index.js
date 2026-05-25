@@ -47,6 +47,7 @@ export class VectorTileFeature {
     }
 
     loadGeometry() {
+        if (this._geometry < 0) throw new Error('feature has no geometry');
         const pbf = this._pbf;
         pbf.pos = this._geometry;
 
@@ -101,6 +102,7 @@ export class VectorTileFeature {
     }
 
     bbox() {
+        if (this._geometry < 0) throw new Error('feature has no geometry');
         const pbf = this._pbf;
         pbf.pos = this._geometry;
 

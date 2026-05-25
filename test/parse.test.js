@@ -263,6 +263,25 @@ test('Value message with only an unknown field throws rather than looping', () =
     assert.throws(() => new VectorTile(new Protobuf(buf)), /unknown feature value/);
 });
 
+test('throws a clear error for a feature with no geometry (issue #39)', () => {
+    const pbf = new Protobuf();
+    pbf.writeMessage(3, (_, p) => {
+        p.writeStringField(1, 'layer');
+        p.writeMessage(2, (_, p) => {
+            p.writeVarintField(1, 1);
+            p.writeVarintField(3, 1);
+            // intentionally no geometry field
+        }, null);
+        p.writeVarintField(5, 4096);
+    }, null);
+
+    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const feature = tile.layers.layer.feature(0);
+    assert.throws(() => feature.loadGeometry(), /feature has no geometry/);
+    assert.throws(() => feature.bbox(), /feature has no geometry/);
+    assert.throws(() => feature.toGeoJSON(0, 0, 0), /feature has no geometry/);
+});
+
 test('does not mutate prototypes via a "__proto__" layer name or property key', () => {
     // Hand-build a minimal MVT tile containing a layer named "__proto__"
     // with one feature whose properties include a "__proto__" key.
