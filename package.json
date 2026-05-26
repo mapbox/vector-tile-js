@@ -13,7 +13,7 @@
   "dependencies": {
     "@mapbox/point-geometry": "~1.1.0",
     "@types/geojson": "^7946.0.16",
-    "pbf": "^4.0.2"
+    "pbf": "^5.0.0"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",

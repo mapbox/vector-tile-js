@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
-import Protobuf from 'pbf';
+import {PbfReader, PbfWriter} from 'pbf';
 import {VectorTile, VectorTileLayer, VectorTileFeature} from '../index.js';
 import Point from '@mapbox/point-geometry';
 
 function getFixtureTile(name) {
     const data = fs.readFileSync(new URL(`fixtures/${name}.pbf`, import.meta.url));
-    return new VectorTile(new Protobuf(data));
+    return new VectorTile(new PbfReader(data));
 }
 
 const tile = getFixtureTile('14-8801-5371.vector');
@@ -175,12 +175,12 @@ test('toGeoJSON', () => {
 });
 
 test('VectorTileLayer', () => {
-    const emptyLayer = new VectorTileLayer(new Protobuf(Buffer.alloc(0)));
+    const emptyLayer = new VectorTileLayer(new PbfReader(Buffer.alloc(0)));
     assert.ok(emptyLayer, 'can be created with no values');
 });
 
 test('VectorTileFeature', () => {
-    const emptyFeature = new VectorTileFeature(new Protobuf(Buffer.alloc(0)));
+    const emptyFeature = new VectorTileFeature(new PbfReader(Buffer.alloc(0)));
     assert.ok(emptyFeature, 'can be created with no values');
     assert.ok(Array.isArray(VectorTileFeature.types));
     assert.deepEqual(VectorTileFeature.types, ['Unknown', 'Point', 'LineString', 'Polygon']);
@@ -210,7 +210,7 @@ test('skips unknown fields at every nesting level', () => {
     // Build a tile that has an unknown field on the Tile, Layer, Feature, and
     // Value messages. Inlined readers must skip them (not infinite-loop) and
     // still surface the known data correctly.
-    const pbf = new Protobuf();
+    const pbf = new PbfWriter();
 
     pbf.writeStringField(99, 'unknown-tile-field');
     pbf.writeMessage(3, (_, p) => { // Tile.layers
@@ -232,7 +232,7 @@ test('skips unknown fields at every nesting level', () => {
         p.writeVarintField(5, 4096);
     }, null);
 
-    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const tile = new VectorTile(new PbfReader(pbf.finish()));
     const layer = tile.layers.layer;
     assert.ok(layer);
     assert.equal(layer.length, 1);
@@ -244,7 +244,7 @@ test('skips unknown fields at every nesting level', () => {
 test('Value message with only an unknown field throws rather than looping', () => {
     // Regression: readValueMessage used to infinite-loop on a Value containing
     // no known tag (no value set + pos didn't advance).
-    const pbf = new Protobuf();
+    const pbf = new PbfWriter();
     pbf.writeMessage(3, (_, p) => {
         p.writeStringField(1, 'layer');
         p.writeStringField(3, 'k');
@@ -260,7 +260,7 @@ test('Value message with only an unknown field throws rather than looping', () =
     }, null);
 
     const buf = pbf.finish();
-    assert.throws(() => new VectorTile(new Protobuf(buf)), /unknown feature value/);
+    assert.throws(() => new VectorTile(new PbfReader(buf)), /unknown feature value/);
 });
 
 test('skips zero-count geometry commands', () => {
@@ -270,7 +270,7 @@ test('skips zero-count geometry commands', () => {
     // The leading zero-count command must be skipped, not break the loop
     // (which would lose the real MoveTo) and not be executed (which would
     // consume the next command's bytes as a coordinate pair).
-    const pbf = new Protobuf();
+    const pbf = new PbfWriter();
     pbf.writeMessage(3, (_, p) => {
         p.writeStringField(1, 'layer');
         p.writeMessage(2, (_, p) => {
@@ -281,14 +281,14 @@ test('skips zero-count geometry commands', () => {
         p.writeVarintField(5, 4096);
     }, null);
 
-    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const tile = new VectorTile(new PbfReader(pbf.finish()));
     const feature = tile.layers.layer.feature(0);
     assert.deepEqual(feature.loadGeometry(), [[new Point(3, 4)]]);
     assert.deepEqual(feature.bbox(), [3, 4, 3, 4]);
 });
 
 test('throws a clear error for a feature with no geometry (issue #39)', () => {
-    const pbf = new Protobuf();
+    const pbf = new PbfWriter();
     pbf.writeMessage(3, (_, p) => {
         p.writeStringField(1, 'layer');
         p.writeMessage(2, (_, p) => {
@@ -299,7 +299,7 @@ test('throws a clear error for a feature with no geometry (issue #39)', () => {
         p.writeVarintField(5, 4096);
     }, null);
 
-    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const tile = new VectorTile(new PbfReader(pbf.finish()));
     const feature = tile.layers.layer.feature(0);
     assert.throws(() => feature.loadGeometry(), /feature has no geometry/);
     assert.throws(() => feature.bbox(), /feature has no geometry/);
@@ -309,7 +309,7 @@ test('throws a clear error for a feature with no geometry (issue #39)', () => {
 test('does not mutate prototypes via a "__proto__" layer name or property key', () => {
     // Hand-build a minimal MVT tile containing a layer named "__proto__"
     // with one feature whose properties include a "__proto__" key.
-    const pbf = new Protobuf();
+    const pbf = new PbfWriter();
 
     pbf.writeMessage(3, (_, p) => { // Tile.layers
         p.writeVarintField(15, 2);                  // version
@@ -327,7 +327,7 @@ test('does not mutate prototypes via a "__proto__" layer name or property key', 
         p.writeVarintField(5, 4096);                 // extent
     }, null);
 
-    const tile = new VectorTile(new Protobuf(pbf.finish()));
+    const tile = new VectorTile(new PbfReader(pbf.finish()));
 
     // tile.layers must keep a null prototype — i.e. its prototype wasn't
     // hijacked by `layers["__proto__"] = layer`.

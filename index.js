@@ -1,12 +1,12 @@
 
 import Point from '@mapbox/point-geometry';
 
-/** @import Pbf from 'pbf' */
+/** @import {PbfReader} from 'pbf' */
 /** @import {Feature} from 'geojson' */
 
 export class VectorTileFeature {
     /**
-     * @param {Pbf} pbf
+     * @param {PbfReader} pbf
      * @param {number} end
      * @param {number} extent
      * @param {string[]} keys
@@ -269,7 +269,7 @@ function signedArea(ring) {
 
 export class VectorTileLayer {
     /**
-     * @param {Pbf} pbf
+     * @param {PbfReader} pbf
      * @param {number} [end]
      */
     constructor(pbf, end) {
@@ -325,7 +325,7 @@ export class VectorTileLayer {
 }
 
 /**
- * @param {Pbf} pbf
+ * @param {PbfReader} pbf
  */
 function readValueMessage(pbf) {
     let value = null;
@@ -337,7 +337,7 @@ function readValueMessage(pbf) {
             tag === 10 ? pbf.readString() :
             tag === 21 ? pbf.readFloat() :
             tag === 25 ? pbf.readDouble() :
-            tag === 32 ? pbf.readVarint64() :
+            tag === 32 ? pbf.readVarint(true) :
             tag === 40 ? pbf.readVarint() :
             tag === 48 ? pbf.readSVarint() :
             tag === 56 ? pbf.readBoolean() :
@@ -352,7 +352,7 @@ function readValueMessage(pbf) {
 
 export class VectorTile {
     /**
-     * @param {Pbf} pbf
+     * @param {PbfReader} pbf
      * @param {number} [end]
      */
     constructor(pbf, end = pbf.length) {
