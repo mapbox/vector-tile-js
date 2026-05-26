@@ -1,14 +1,14 @@
 # vector-tile
 
-This library reads [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) and allows access to the layers and features.
+This library reads [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) and allows access to the layers and features. Depends on [pbf](https://github.com/mapbox/pbf) v5+.
 
 ## Example
 
 ```js
 import {VectorTile} from '@mapbox/vector-tile';
-import Protobuf from 'pbf';
+import {PbfReader} from 'pbf';
 
-const tile = new VectorTile(new Protobuf(data));
+const tile = new VectorTile(new PbfReader(data));
 
 // Contains a map of all layers
 tile.layers;
@@ -28,11 +28,11 @@ zlib module would be:
 
 ```js
 import {VectorTile} from '@mapbox/vector-tile';
-import Protobuf from 'pbf';
+import {PbfReader} from 'pbf';
 import {gunzipSync} from 'zlib';
 
 const buffer = gunzipSync(data);
-const tile = new VectorTile(new Protobuf(buffer));
+const tile = new VectorTile(new PbfReader(buffer));
 ```
 
 ## Install
@@ -50,8 +50,8 @@ An object that parses vector tile data and makes it readable.
 
 #### Constructor
 
-- **new VectorTile(protobuf[, end])** &mdash;
-  parses the vector tile data contained in the given [Protobuf](https://github.com/mapbox/pbf) object,
+- **new VectorTile(pbf[, end])** &mdash;
+  parses the vector tile data contained in the given [PbfReader](https://github.com/mapbox/pbf) object,
   saving resulting layers in the created object as a `layers` property. Optionally accepts end index.
 
 #### Properties
