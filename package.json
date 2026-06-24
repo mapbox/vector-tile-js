@@ -4,7 +4,7 @@
   "repository": {
     "url": "git+https://github.com/mapbox/vector-tile-js.git"
   },
-  "version": "3.0.0",
+  "version": "3.0.1",
   "type": "module",
   "exports": "./index.js",
   "license": "BSD-3-Clause",
@@ -30,5 +30,8 @@
   },
   "files": [
     "index.d.ts"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
